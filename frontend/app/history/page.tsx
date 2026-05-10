@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Clock,
   Cpu,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -43,7 +44,7 @@ const allItems = [
 ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
+  return new Date(dateStr).toLocaleDateString("tr-TR", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -51,34 +52,51 @@ function formatDate(dateStr: string) {
 }
 
 const statusIcons: Record<string, React.ReactNode> = {
-  resolved: <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />,
-  in_progress: <Cpu className="h-3.5 w-3.5 text-violet-400" />,
-  investigating: <Cpu className="h-3.5 w-3.5 text-violet-400" />,
-  analyzing: <Cpu className="h-3.5 w-3.5 text-blue-400" />,
-  open: <Clock className="h-3.5 w-3.5 text-amber-400" />,
-  draft: <Clock className="h-3.5 w-3.5 text-muted-foreground" />,
-  closed: <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />,
+  draft: <Clock className="h-4 w-4" />,
+  analyzing: <Activity className="h-4 w-4" />,
+  in_progress: <Activity className="h-4 w-4" />,
+  resolved: <CheckCircle2 className="h-4 w-4" />,
+  closed: <CheckCircle2 className="h-4 w-4" />,
+  investigating: <Cpu className="h-4 w-4" />,
+  open: <Clock className="h-4 w-4" />,
+};
+
+const severityTranslations: Record<string, string> = {
+  low: "Düşük",
+  medium: "Orta",
+  high: "Yüksek",
+  critical: "Kritik",
+};
+
+const statusTranslations: Record<string, string> = {
+  open: "Açık",
+  investigating: "İnceleniyor",
+  resolved: "Çözüldü",
+  closed: "Kapalı",
+  in_progress: "Devam Ediyor",
+  analyzing: "Analiz Ediliyor",
+  draft: "Taslak"
 };
 
 export default function HistoryPage() {
   return (
     <DashboardLayout>
       <DashboardHeader
-        title="History"
-        description="Browse past investigations and incidents"
+        title="Geçmiş"
+        description="Geçmiş incelemelere ve olaylara göz atın"
         badge={
           <Badge variant="secondary" className="text-[10px]">
-            {allItems.length} records
+            {allItems.length} kayıt
           </Badge>
         }
       >
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <Filter className="h-3.5 w-3.5" />
-          Filter
+          Filtrele
         </Button>
         <Button variant="outline" size="sm" className="gap-1.5 text-xs">
           <ArrowUpDown className="h-3.5 w-3.5" />
-          Sort
+          Sırala
         </Button>
       </DashboardHeader>
 
@@ -87,15 +105,15 @@ export default function HistoryPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/50" />
           <Input
-            placeholder="Search investigations, incidents, or keywords..."
+            placeholder="İncelemelerde, olaylarda veya anahtar kelimelerde ara..."
             className="pl-10 bg-card/40 border-border/50 focus:border-primary/30"
           />
         </div>
 
         {/* History List */}
         <SectionCard
-          title="All Records"
-          description="Chronologically ordered"
+          title="Tüm Kayıtlar"
+          description="Kronolojik olarak sıralandı"
           icon={<HistoryIcon className="h-4 w-4" />}
         >
           <div className="divide-y divide-border/20">
@@ -133,7 +151,7 @@ export default function HistoryPage() {
                           : "bg-orange-500/10 text-orange-400"
                       }`}
                     >
-                      {item.type}
+                      {item.type === "investigation" ? "inceleme" : "olay"}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -149,14 +167,11 @@ export default function HistoryPage() {
 
                 {/* Metadata */}
                 <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     {statusIcons[item.status] || statusIcons.draft}
-                    <Badge
-                      variant="outline"
-                      className="text-[9px] capitalize"
-                    >
-                      {item.status.replace("_", " ")}
-                    </Badge>
+                    <span className="capitalize">
+                      {statusTranslations[item.status] || item.status.replace("_", " ")}
+                    </span>
                   </div>
 
                   <Badge
@@ -171,7 +186,7 @@ export default function HistoryPage() {
                             : "border-emerald-500/30 text-emerald-400"
                     }`}
                   >
-                    {item.severity}
+                    {severityTranslations[item.severity] || item.severity}
                   </Badge>
 
                   <div className="flex items-center gap-1 text-xs text-muted-foreground/60">

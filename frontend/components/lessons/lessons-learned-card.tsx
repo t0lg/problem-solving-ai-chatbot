@@ -17,8 +17,8 @@ export function LessonsLearnedCard({
 }: LessonsLearnedCardProps) {
   return (
     <SectionCard
-      title="Lessons Learned"
-      description="From similar past incidents"
+      title="Çıkarılan Dersler"
+      description="Geçmiş benzer olaylardan"
       icon={<BookOpen className="h-4 w-4" />}
       className={cn(className)}
     >
@@ -46,7 +46,7 @@ export function LessonsLearnedCard({
               ))}
               {lesson.actionsTaken.length > 2 && (
                 <p className="pl-5 text-[10px] text-muted-foreground/60">
-                  +{lesson.actionsTaken.length - 2} more actions
+                  +{lesson.actionsTaken.length - 2} aksiyon daha
                 </p>
               )}
             </div>

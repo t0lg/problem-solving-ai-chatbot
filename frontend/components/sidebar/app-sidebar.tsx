@@ -33,6 +33,20 @@ const statusColors: Record<string, string> = {
   closed: "bg-muted text-muted-foreground",
 };
 
+const severityTranslations: Record<string, string> = {
+  low: "düşük",
+  medium: "orta",
+  high: "yüksek",
+  critical: "kritik",
+};
+
+const statusTranslations: Record<string, string> = {
+  open: "açık",
+  investigating: "inceleniyor",
+  resolved: "çözüldü",
+  closed: "kapalı",
+};
+
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const isSidebarOpen = useProblemStore((s) => s.isSidebarOpen);
@@ -58,7 +72,7 @@ export function AppSidebar() {
                 ResolveAI
               </span>
               <span className="text-[10px] text-muted-foreground font-medium">
-                Problem Intelligence
+                Problem Zekası
               </span>
             </div>
           )}
@@ -80,26 +94,26 @@ export function AppSidebar() {
         <div className="space-y-1">
           {!collapsed && (
             <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-              Navigation
+              Navigasyon
             </p>
           )}
           <SidebarItem
             href="/dashboard"
             icon={<LayoutDashboard className="h-4 w-4" />}
-            label="Dashboard"
+            label="Kontrol Paneli"
             collapsed={collapsed}
           />
           <SidebarItem
             href="/investigation"
             icon={<Search className="h-4 w-4" />}
-            label="Investigations"
+            label="İncelemeler"
             badge={2}
             collapsed={collapsed}
           />
           <SidebarItem
             href="/history"
             icon={<History className="h-4 w-4" />}
-            label="History"
+            label="Geçmiş"
             collapsed={collapsed}
           />
         </div>
@@ -111,7 +125,7 @@ export function AppSidebar() {
           <div>
             <div className="mb-3 flex items-center justify-between px-3">
               <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                Recent Incidents
+                Son Olaylar
               </p>
               <Zap className="h-3 w-3 text-muted-foreground/40" />
             </div>
@@ -148,7 +162,7 @@ export function AppSidebar() {
                         severityColors[incident.severity]
                       )}
                     >
-                      {incident.severity}
+                      {severityTranslations[incident.severity] || incident.severity}
                     </Badge>
                     <Badge
                       variant="secondary"
@@ -157,7 +171,7 @@ export function AppSidebar() {
                         statusColors[incident.status]
                       )}
                     >
-                      {incident.status}
+                      {statusTranslations[incident.status] || incident.status}
                     </Badge>
                   </div>
                 </button>
@@ -175,8 +189,8 @@ export function AppSidebar() {
               <Zap className="h-3.5 w-3.5 text-violet-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-semibold text-violet-300">AI Engine Active</p>
-              <p className="text-[10px] text-violet-400/60">v2.4.1 · Ready</p>
+              <p className="text-[11px] font-semibold text-violet-300">YZ Motoru Aktif</p>
+              <p className="text-[10px] text-violet-400/60">v2.4.1 · Hazır</p>
             </div>
             <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           </div>

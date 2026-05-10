@@ -57,7 +57,7 @@ export function MethodologyCard({
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{methodology.name}</p>
           <p className="text-xs text-muted-foreground truncate">
-            {methodology.steps.length} steps
+            {methodology.steps.length} adım
           </p>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" />
@@ -98,7 +98,7 @@ export function MethodologyCard({
           ))}
           {methodology.steps.length > 3 && (
             <p className="pl-6 text-[11px] text-muted-foreground/60">
-              +{methodology.steps.length - 3} more steps
+              +{methodology.steps.length - 3} adım daha
             </p>
           )}
         </div>
@@ -111,7 +111,7 @@ export function MethodologyCard({
               : "bg-accent hover:bg-accent/80 text-foreground"
           )}
         >
-          {isSelected ? "Selected" : "Select Methodology"}
+          {isSelected ? "Seçildi" : "Metodoloji Seç"}
         </button>
       </div>
     </SectionCard>

@@ -2,6 +2,30 @@ export type ProblemSeverity = "low" | "medium" | "high" | "critical";
 export type ProblemStatus = "draft" | "analyzing" | "in_progress" | "resolved" | "closed";
 export type TimelineEventType = "input" | "analysis" | "insight" | "recommendation" | "resolution";
 
+export type InvestigationStepStatus = "pending" | "active" | "completed";
+
+export type InvestigationStepType =
+  | "problem_received"
+  | "ai_thinking"
+  | "methodology_selection"
+  | "root_cause_analysis"
+  | "action_proposal"
+  | "similar_incidents"
+  | "lessons_learned"
+  | "completion";
+
+export interface InvestigationStep {
+  id: string;
+  stepNumber: number;
+  type: InvestigationStepType;
+  status: InvestigationStepStatus;
+  title: string;
+  description: string;
+  detail?: string;
+  timestamp?: string;
+  durationMs?: number;
+}
+
 export interface Problem {
   id: string;
   title: string;

@@ -17,8 +17,8 @@ export function SimilarIncidentsCard({
 }: SimilarIncidentsCardProps) {
   return (
     <SectionCard
-      title="Similar Incidents"
-      description={`${incidents.length} matches found`}
+      title="Benzer Olaylar"
+      description={`${incidents.length} eşleşme bulundu`}
       icon={<GitCompare className="h-4 w-4" />}
       className={className}
       glow

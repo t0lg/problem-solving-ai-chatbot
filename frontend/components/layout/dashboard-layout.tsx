@@ -39,9 +39,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </button>
               )}
               <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">Workspace</span>
+                <span className="font-medium text-foreground">Çalışma Alanı</span>
                 <span>/</span>
-                <span>Investigation</span>
+                <span>İnceleme</span>
               </div>
             </div>
 
@@ -50,7 +50,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <button
                   onClick={toggleInsightsPanel}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                  title="Show Insights Panel"
+                  title="İçgörü Panelini Göster"
                 >
                   <PanelRight className="h-4 w-4" />
                 </button>

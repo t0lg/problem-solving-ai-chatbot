@@ -15,35 +15,52 @@ import {
   Zap,
 } from "lucide-react";
 
+const severityTranslations: Record<string, string> = {
+  low: "Düşük",
+  medium: "Orta",
+  high: "Yüksek",
+  critical: "Kritik",
+};
+
+const statusTranslations: Record<string, string> = {
+  open: "Açık",
+  investigating: "İnceleniyor",
+  resolved: "Çözüldü",
+  closed: "Kapalı",
+  in_progress: "Devam Ediyor",
+  analyzing: "Analiz Ediliyor",
+  draft: "Taslak"
+};
+
 const stats = [
   {
-    label: "Active Investigations",
+    label: "Aktif İncelemeler",
     value: "12",
-    change: "+3 this week",
+    change: "bu hafta +3",
     trend: "up" as const,
     icon: <Activity className="h-4 w-4" />,
     color: "from-violet-500/20 to-violet-500/5 text-violet-400",
   },
   {
-    label: "Resolved Today",
+    label: "Bugün Çözülenler",
     value: "5",
-    change: "↑ 25% vs avg",
+    change: "ort. %25 ↑",
     trend: "up" as const,
     icon: <CheckCircle2 className="h-4 w-4" />,
     color: "from-emerald-500/20 to-emerald-500/5 text-emerald-400",
   },
   {
-    label: "Avg Resolution Time",
-    value: "4.2h",
-    change: "-18% vs last month",
+    label: "Ort. Çözüm Süresi",
+    value: "4.2s",
+    change: "geçen aya göre -%18",
     trend: "down" as const,
     icon: <Clock className="h-4 w-4" />,
     color: "from-blue-500/20 to-blue-500/5 text-blue-400",
   },
   {
-    label: "Critical Issues",
+    label: "Kritik Sorunlar",
     value: "2",
-    change: "Needs attention",
+    change: "Dikkat gerektiriyor",
     trend: "alert" as const,
     icon: <AlertTriangle className="h-4 w-4" />,
     color: "from-red-500/20 to-red-500/5 text-red-400",
@@ -54,15 +71,15 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <DashboardHeader
-        title="Dashboard"
-        description="Overview of your problem-solving operations"
+        title="Kontrol Paneli"
+        description="Problem çözme operasyonlarınıza genel bakış"
         badge={
           <Badge
             variant="outline"
             className="gap-1 border-emerald-500/30 text-emerald-400 text-[10px]"
           >
             <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Live
+            Canlı
           </Badge>
         }
       />
@@ -105,12 +122,12 @@ export default function DashboardPage() {
           {/* Recent Problems */}
           <div className="lg:col-span-2">
             <SectionCard
-              title="Recent Investigations"
-              description="Latest problems submitted for analysis"
+              title="Son İncelemeler"
+              description="Analiz için gönderilen son problemler"
               icon={<BarChart3 className="h-4 w-4" />}
               headerAction={
                 <Badge variant="secondary" className="text-[10px]">
-                  {mockProblems.length} total
+                  {mockProblems.length} toplam
                 </Badge>
               }
             >
@@ -158,7 +175,7 @@ export default function DashboardPage() {
                               : "border-muted"
                         }`}
                       >
-                        {problem.status.replace("_", " ")}
+                        {statusTranslations[problem.status] || problem.status.replace("_", " ")}
                       </Badge>
                     </div>
                   </div>
@@ -169,8 +186,8 @@ export default function DashboardPage() {
 
           {/* Quick Insights */}
           <SectionCard
-            title="AI Insights"
-            description="Automated pattern detection"
+            title="YZ İçgörüleri"
+            description="Otomatik örüntü algılama"
             icon={<TrendingUp className="h-4 w-4" />}
             glow
           >
@@ -179,24 +196,24 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 mb-2">
                   <Zap className="h-3.5 w-3.5 text-violet-400" />
                   <span className="text-xs font-semibold text-violet-300">
-                    Trending Pattern
+                    Yükselen Örüntü
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Motor overheating incidents increased 40% this quarter.
-                  Correlates with maintenance schedule changes in Q3.
+                  Motor aşırı ısınma olayları bu çeyrekte %40 arttı.
+                  3. Çeyrekteki bakım programı değişiklikleri ile korelasyon gösteriyor.
                 </p>
               </div>
 
               <div className="space-y-2">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                  Top Categories
+                  Öne Çıkan Kategoriler
                 </p>
                 {[
-                  { name: "Mechanical", count: 42, pct: 85 },
-                  { name: "Electrical", count: 28, pct: 60 },
-                  { name: "Process", count: 19, pct: 40 },
-                  { name: "Quality", count: 11, pct: 25 },
+                  { name: "Mekanik", count: 42, pct: 85 },
+                  { name: "Elektrik", count: 28, pct: 60 },
+                  { name: "Proses", count: 19, pct: 40 },
+                  { name: "Kalite", count: 11, pct: 25 },
                 ].map((cat) => (
                   <div key={cat.name} className="space-y-1">
                     <div className="flex items-center justify-between text-xs">
@@ -220,13 +237,13 @@ export default function DashboardPage() {
 
         {/* ── Active Incidents ───────────────────────────────────── */}
         <SectionCard
-          title="Active Incidents"
-          description="Incidents requiring attention"
+          title="Aktif Olaylar"
+          description="İlgi gerektiren olaylar"
           icon={<AlertTriangle className="h-4 w-4" />}
           headerAction={
             <Badge variant="outline" className="text-[10px] border-orange-500/30 text-orange-400">
               {mockIncidents.filter((i) => i.status !== "resolved" && i.status !== "closed").length}{" "}
-              open
+              açık
             </Badge>
           }
         >
@@ -235,19 +252,19 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-border/30">
                   <th className="pb-2 pr-4 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    Incident
+                    Olay
                   </th>
                   <th className="pb-2 pr-4 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    Category
+                    Kategori
                   </th>
                   <th className="pb-2 pr-4 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    Severity
+                    Önem Derecesi
                   </th>
                   <th className="pb-2 pr-4 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    Status
+                    Durum
                   </th>
                   <th className="pb-2 text-left text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    Location
+                    Konum
                   </th>
                 </tr>
               </thead>
@@ -283,7 +300,7 @@ export default function DashboardPage() {
                                 : "border-emerald-500/30 text-emerald-400"
                         }`}
                       >
-                        {incident.severity}
+                        {severityTranslations[incident.severity] || incident.severity}
                       </Badge>
                     </td>
                     <td className="py-3 pr-4">
@@ -299,7 +316,7 @@ export default function DashboardPage() {
                                 : "bg-muted text-muted-foreground"
                         }`}
                       >
-                        {incident.status}
+                        {statusTranslations[incident.status] || incident.status}
                       </Badge>
                     </td>
                     <td className="py-3 text-sm text-muted-foreground">

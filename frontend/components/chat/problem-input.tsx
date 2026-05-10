@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProblemStore } from "@/store/useProblemStore";
-import { Send, Sparkles } from "lucide-react";
+import { Send, Sparkles, Brain, RotateCcw } from "lucide-react";
 
 interface ProblemInputProps {
   className?: string;
@@ -14,75 +14,213 @@ interface ProblemInputProps {
 export function ProblemInput({ className }: ProblemInputProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const { submitProblem, startAnalysis, isAnalyzing } = useProblemStore();
+  const {
+    submitProblem,
+    startAnalysis,
+    isAnalyzing,
+    isComplete,
+    analysisProgress,
+    resetInvestigation,
+    currentProblem,
+  } = useProblemStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !description.trim()) return;
-    submitProblem(title.trim(), description.trim());
-    startAnalysis();
-    setTitle("");
-    setDescription("");
-  };
+  const canSubmit = title.trim().length > 0 && description.trim().length > 0 && !isAnalyzing;
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!canSubmit) return;
+      submitProblem(title.trim(), description.trim());
+      startAnalysis();
+      setTitle("");
+      setDescription("");
+    },
+    [canSubmit, title, description, submitProblem, startAnalysis]
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        handleSubmit(e);
+      }
+    },
+    [handleSubmit]
+  );
 
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-3", className)}>
-      <div className="rounded-xl border border-border/50 bg-card/40 p-4 backdrop-blur-sm transition-all focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/10">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500/20 to-indigo-500/20">
-            <Sparkles className="h-3.5 w-3.5 text-violet-400" />
+    <div className={cn("space-y-3", className)}>
+      <form onSubmit={handleSubmit}>
+        <div
+          className={cn(
+            "relative rounded-xl border bg-card/40 backdrop-blur-sm transition-all duration-300",
+            isAnalyzing
+              ? "border-violet-500/30 ring-1 ring-violet-500/10"
+              : "border-border/50 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/10",
+            isComplete && "border-emerald-500/30 ring-1 ring-emerald-500/10"
+          )}
+        >
+          {/* Progress bar — runs along the top edge */}
+          {isAnalyzing && (
+            <div className="absolute top-0 left-0 right-0 h-[2px] overflow-hidden rounded-t-xl">
+              <div
+                className="h-full bg-gradient-to-r from-violet-500 via-indigo-500 to-violet-500 transition-all duration-700 ease-out"
+                style={{ width: `${analysisProgress}%` }}
+              />
+              {/* Shimmer overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+            </div>
+          )}
+
+          {/* Complete indicator */}
+          {isComplete && !isAnalyzing && (
+            <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-xl bg-gradient-to-r from-emerald-500 to-emerald-400" />
+          )}
+
+          <div className="p-4">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className={cn(
+                    "flex h-7 w-7 items-center justify-center rounded-lg transition-colors duration-300",
+                    isAnalyzing
+                      ? "bg-gradient-to-br from-violet-500/30 to-indigo-500/30"
+                      : isComplete
+                        ? "bg-gradient-to-br from-emerald-500/20 to-emerald-500/10"
+                        : "bg-gradient-to-br from-violet-500/20 to-indigo-500/20"
+                  )}
+                >
+                  {isAnalyzing ? (
+                    <Brain className="h-3.5 w-3.5 text-violet-400 animate-pulse" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5 text-violet-400" />
+                  )}
+                </div>
+                <span className="text-sm font-semibold text-foreground/80">
+                  {isAnalyzing
+                    ? "YZ Analiz Ediyor..."
+                    : isComplete
+                      ? "Analiz Tamamlandı"
+                      : "Probleminizi Açıklayın"}
+                </span>
+              </div>
+
+              {/* Progress percentage during analysis */}
+              {isAnalyzing && (
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted/50">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 transition-all duration-500 ease-out"
+                      style={{ width: `${analysisProgress}%` }}
+                    />
+                  </div>
+                  <span className="text-[10px] font-mono text-violet-400 tabular-nums w-8 text-right">
+                    {analysisProgress}%
+                  </span>
+                </div>
+              )}
+
+              {/* Reset button when complete */}
+              {isComplete && !isAnalyzing && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetInvestigation}
+                  className="gap-1.5 text-xs text-muted-foreground hover:text-foreground h-7"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Yeni
+                </Button>
+              )}
+            </div>
+
+            {/* Inputs */}
+            <Input
+              placeholder="Problem başlığı (örn. Taşıyıcı Bant Motorunun Aşırı Isınması)"
+              value={isAnalyzing || isComplete ? currentProblem?.title || "" : title}
+              onChange={(e) => setTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              disabled={isAnalyzing || isComplete}
+              className={cn(
+                "mb-2 border-none bg-transparent px-0 text-sm font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 shadow-none",
+                (isAnalyzing || isComplete) && "opacity-60 cursor-not-allowed"
+              )}
+            />
+
+            <textarea
+              placeholder="Ne zaman başladığı, etkilenen sistemler ve gözlemler dahil olmak üzere problem hakkında ayrıntılı bağlam sağlayın..."
+              value={isAnalyzing || isComplete ? currentProblem?.description || "" : description}
+              onChange={(e) => setDescription(e.target.value)}
+              onKeyDown={handleKeyDown}
+              rows={3}
+              disabled={isAnalyzing || isComplete}
+              className={cn(
+                "w-full resize-none bg-transparent text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none leading-relaxed",
+                (isAnalyzing || isComplete) && "opacity-60 cursor-not-allowed"
+              )}
+            />
+
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-2 border-t border-border/30">
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground/50">
+                {isAnalyzing ? (
+                  <span className="flex items-center gap-1.5 text-violet-400/70">
+                    <div className="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse" />
+                    YZ motoru probleminizi işliyor...
+                  </span>
+                ) : isComplete ? (
+                  <span className="flex items-center gap-1.5 text-emerald-400/70">
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    İnceleme sonuçları aşağıda hazır
+                  </span>
+                ) : (
+                  <>
+                    <kbd className="rounded border border-border/50 bg-muted/50 px-1 py-0.5 font-mono text-[10px]">
+                      ⌘
+                    </kbd>
+                    <kbd className="rounded border border-border/50 bg-muted/50 px-1 py-0.5 font-mono text-[10px]">
+                      Enter
+                    </kbd>
+                    <span>göndermek için</span>
+                  </>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                size="sm"
+                disabled={!canSubmit}
+                className={cn(
+                  "gap-1.5 transition-all",
+                  isAnalyzing
+                    ? "bg-violet-600/50 text-white/70 cursor-not-allowed"
+                    : isComplete
+                      ? "bg-emerald-600/50 text-white/70 cursor-not-allowed"
+                      : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
+                )}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    Analiz Ediliyor...
+                  </>
+                ) : isComplete ? (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Tamamlandı
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    Analiz Et
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-          <span className="text-sm font-semibold text-foreground/80">
-            Describe Your Problem
-          </span>
         </div>
-
-        <Input
-          placeholder="Problem title (e.g. Conveyor Belt Motor Overheating)"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mb-2 border-none bg-transparent px-0 text-sm font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 shadow-none"
-        />
-
-        <textarea
-          placeholder="Provide detailed context about the problem, including when it started, affected systems, and any observations..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={3}
-          className="w-full resize-none bg-transparent text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none leading-relaxed"
-        />
-
-        <div className="flex items-center justify-between pt-2 border-t border-border/30">
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground/50">
-            <kbd className="rounded border border-border/50 bg-muted/50 px-1 py-0.5 font-mono text-[10px]">
-              ⌘
-            </kbd>
-            <kbd className="rounded border border-border/50 bg-muted/50 px-1 py-0.5 font-mono text-[10px]">
-              Enter
-            </kbd>
-            <span>to submit</span>
-          </div>
-
-          <Button
-            type="submit"
-            size="sm"
-            disabled={!title.trim() || !description.trim() || isAnalyzing}
-            className="gap-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 transition-all disabled:opacity-50"
-          >
-            {isAnalyzing ? (
-              <>
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Analyzing...
-              </>
-            ) : (
-              <>
-                <Send className="h-3.5 w-3.5" />
-                Analyze
-              </>
-            )}
-          </Button>
-        </div>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
