@@ -1,44 +1,35 @@
-# AI Problem Solving Chatbot
+KURULUM VE KRİTİK AYARLAR (İLK ADIM)
+DİKKAT: Bu projeyi klonladığınızda sistemin çalışması için bazı gizli dosyaları manuel oluşturmanız gerekir. Güvenlik nedeniyle (.gitignore) API anahtarları ve şifreler kodla birlikte gelmez.
 
-> **Dikkat:** Branch’ler arasında README’yi “hep aynı” sanıp geçmeyin; bu dosya branch’e göre güncellenir. **`.env` ve içindeki sırlar repoda yoktur** ([.gitignore](.gitignore)) — API anahtarı ve SMTP bilgisi klon sonrası sizin eklemeniz gerekir. Hemen aşağıdaki tabloyu ve [.env.example](.env.example) şablonunu kullanın.
+1. .env Dosyasını Oluşturun
+Proje kök dizininde (yani README.md ile aynı klasörde) .env isimli bir dosya oluşturun. İsterseniz şu komutla şablondan kopyalayabilirsiniz:
 
----
+2. İçini Doldurun
+Oluşturduğunuz .env dosyasını açın ve aşağıdaki şablona göre kendi bilgilerinizi girin. Dosyanın başka bir alt klasörde değil, ana dizinde olduğundan emin olun.
 
-## Ortam dosyası ve gizli bilgiler
+Kod snippet'i
+# Gemini Yapay Zeka Ayarları (Eksikse AI cevap üretmez)
+GEMINI_API_KEY=buraya_gemini_api_keyini_yaz
 
-Şu dosyalar **Git’te izlenmez** (repoda görünmezler, klonladığınızda boştan oluşturmanız gerekir):
+# E-posta Gönderim Ayarları (SMTP)
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=gonderici_mail_adresin@gmail.com
+# ÖNEMLİ: Gmail kullanıyorsanız düz hesap şifreniz DEĞİL, 
+# Google hesabınızdan aldığınız "Uygulama Şifresi"ni yazmalısınız.
+SMTP_PASS=uygulama_sifreniz_buraya
 
-| Dosya | Açıklama |
-|:---|:---|
-| `.env` | Asıl sırlar: API anahtarı, SMTP şifresi, gerçek e-posta adresleri. |
-| `.env.local` | Bazı araçların kullandığı ek yerel yapılandırma. |
-| `.env.<ortam>.local` | Ortama özel yerel ekler (`*.local` deseni). |
+# Opsiyonel Mail Ayarları
+SMTP_FROM= # Boş bırakırsanız SMTP_USER kullanılır
+DEFAULT_KARGO_MAIL_TO=kargo@isletme.com
+DEFAULT_DEPO_MAIL_TO=depo@isletme.com
+DEFAULT_TEDARIK_MAIL_TO=tedarik@isletme.com
+💡 Önemli Notlar:
+API Key Yoksa: Yapay zeka analiz yapamaz ve cevap üretmez.
 
-**Repoda olan şey:** yalnızca şablon [.env.example](.env.example) (değer yok, güvenli). İlk kurulum:
+SMTP Bilgileri Yoksa: Mailler taslak olarak hazırlanır ama gerçek gönderim yapılmaz.
 
-```bash
-cp .env.example .env
-```
-
-Aşağıdaki tablo kod tabanıyla uyumlu tüm ortam anahtarlarını listeler (`getenv` ile okunanlar). Zorunluluk, üretimde e-posta veya Gemini kullanımına bağlıdır.
-
-| Değişken | Tipik zorunluluk | Kullanım |
-|:---|:---|:---|
-| `GEMINI_API_KEY` | LLM çalışsın istiyorsanız **evet** | Google Generative AI (Gemini) kimlik doğrulama |
-| `GEMINI_MODEL` | Hayır | Kullanılacak model kimliği; boşsa uygulama varsayılanı |
-| `GEMINI_VERBOSE` | Hayır | `1` / `true` iken daha ayrıntılı konsol logu |
-| `SMTP_SERVER` | E-posta gönderimi için **evet** | SMTP sunucu adresi |
-| `SMTP_PORT` | Genelde dolu (`587`) | SMTP portu |
-| `SMTP_USER` | E-posta gönderimi için **evet** | SMTP kullanıcı adı |
-| `SMTP_PASS` | E-posta gönderimi için **evet** | SMTP şifresi |
-| `SMTP_FROM` | Hayır | Gönderen adresi; boşsa çoğu senaryoda `SMTP_USER` kullanılır |
-| `DEFAULT_KARGO_MAIL_TO` | Hayır | Taslak e-posta önerilerinde kargo varsayılan alıcısı |
-| `DEFAULT_TEDARIK_MAIL_TO` | Hayır | Taslak şablonda tedarik varsayılan alıcısı |
-| `DEFAULT_DEPO_MAIL_TO` | Hayır | Taslak şablonda depo varsayılan alıcısı |
-
-Gerçek değerleri repoya eklemeyin; ekip içi paylaşımda sırları güvenli kanallardan iletin.
-
-Hangi `.py` dosyasının hangi değişkeni okuduğunu [.env.example](.env.example) içindeki yorum satırlarında da görebilirsiniz.
+Konum: .env dosyası mutlaka projenin ana klasöründe (/problem-solving-ai-chatbot/.env) durmalıdır.
 
 ---
 
