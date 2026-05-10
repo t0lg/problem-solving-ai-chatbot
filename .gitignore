@@ -18,6 +18,8 @@ htmlcov/
 # =========================
 # Environment Variables
 # =========================
+# Gizli değişkenleri kök dizindeki .env dosyasında tanımlayın.
+# Tam liste ve açıklamalar: README "Ortam dosyası ve gizli bilgiler" + .env.example
 .env
 .env.local
 .env.*.local
@@ -84,4 +86,3 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
-EOF

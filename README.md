@@ -1,5 +1,47 @@
 # AI Problem Solving Chatbot
 
+> **Dikkat:** Branch’ler arasında README’yi “hep aynı” sanıp geçmeyin; bu dosya branch’e göre güncellenir. **`.env` ve içindeki sırlar repoda yoktur** ([.gitignore](.gitignore)) — API anahtarı ve SMTP bilgisi klon sonrası sizin eklemeniz gerekir. Hemen aşağıdaki tabloyu ve [.env.example](.env.example) şablonunu kullanın.
+
+---
+
+## Ortam dosyası ve gizli bilgiler
+
+Şu dosyalar **Git’te izlenmez** (repoda görünmezler, klonladığınızda boştan oluşturmanız gerekir):
+
+| Dosya | Açıklama |
+|:---|:---|
+| `.env` | Asıl sırlar: API anahtarı, SMTP şifresi, gerçek e-posta adresleri. |
+| `.env.local` | Bazı araçların kullandığı ek yerel yapılandırma. |
+| `.env.<ortam>.local` | Ortama özel yerel ekler (`*.local` deseni). |
+
+**Repoda olan şey:** yalnızca şablon [.env.example](.env.example) (değer yok, güvenli). İlk kurulum:
+
+```bash
+cp .env.example .env
+```
+
+Aşağıdaki tablo kod tabanıyla uyumlu tüm ortam anahtarlarını listeler (`getenv` ile okunanlar). Zorunluluk, üretimde e-posta veya Gemini kullanımına bağlıdır.
+
+| Değişken | Tipik zorunluluk | Kullanım |
+|:---|:---|:---|
+| `GEMINI_API_KEY` | LLM çalışsın istiyorsanız **evet** | Google Generative AI (Gemini) kimlik doğrulama |
+| `GEMINI_MODEL` | Hayır | Kullanılacak model kimliği; boşsa uygulama varsayılanı |
+| `GEMINI_VERBOSE` | Hayır | `1` / `true` iken daha ayrıntılı konsol logu |
+| `SMTP_SERVER` | E-posta gönderimi için **evet** | SMTP sunucu adresi |
+| `SMTP_PORT` | Genelde dolu (`587`) | SMTP portu |
+| `SMTP_USER` | E-posta gönderimi için **evet** | SMTP kullanıcı adı |
+| `SMTP_PASS` | E-posta gönderimi için **evet** | SMTP şifresi |
+| `SMTP_FROM` | Hayır | Gönderen adresi; boşsa çoğu senaryoda `SMTP_USER` kullanılır |
+| `DEFAULT_KARGO_MAIL_TO` | Hayır | Taslak e-posta önerilerinde kargo varsayılan alıcısı |
+| `DEFAULT_TEDARIK_MAIL_TO` | Hayır | Taslak şablonda tedarik varsayılan alıcısı |
+| `DEFAULT_DEPO_MAIL_TO` | Hayır | Taslak şablonda depo varsayılan alıcısı |
+
+Gerçek değerleri repoya eklemeyin; ekip içi paylaşımda sırları güvenli kanallardan iletin.
+
+Hangi `.py` dosyasının hangi değişkeni okuduğunu [.env.example](.env.example) içindeki yorum satırlarında da görebilirsiniz.
+
+---
+
 AI Problem Solving Chatbot, üretim, otomotiv, lojistik ve operasyon ekiplerinin sistematik problem çözme süreçlerini daha hızlı, düzenli ve izlenebilir hale getirmek için geliştirilen AI destekli bir web uygulamasıdır.
 
 Proje; 5 Why, Ishikawa / Fishbone ve 8D gibi profesyonel problem çözme metodolojilerini destekler. Kullanıcıya adım adım rehberlik eder, çözüm süreci sonunda lessons learned kaydı oluşturur ve geçmiş problem çözme deneyimlerini kurumsal bilgi havuzunda saklamayı hedefler.
