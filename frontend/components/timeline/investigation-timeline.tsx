@@ -228,6 +228,9 @@ export function InvestigationTimeline({
                     isCompleted && "text-foreground"
                   )}
                 >
+                  <span className="opacity-50 mr-1.5 font-mono text-[10px]">
+                    {step.stepNumber ? String(step.stepNumber).padStart(2, "0") : ""}
+                  </span>
                   {step.title}
                 </h4>
                 <StatusBadge status={step.status} />

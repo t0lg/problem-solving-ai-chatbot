@@ -19,23 +19,35 @@ export function ProblemInput({ className }: ProblemInputProps) {
     startAnalysis,
     isAnalyzing,
     isComplete,
+    analysisState,
+    nextQuestion,
     analysisProgress,
     resetInvestigation,
     currentProblem,
   } = useProblemStore();
 
-  const canSubmit = title.trim().length > 0 && description.trim().length > 0 && !isAnalyzing;
+  const isWaitingUser = analysisState === "WAITING_USER";
+  const disabled = (isAnalyzing && !isWaitingUser) || (isComplete && !isWaitingUser);
+  const canSubmit = title.trim().length > 0 && description.trim().length > 0 && !disabled;
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       if (!canSubmit) return;
-      submitProblem(title.trim(), description.trim());
-      startAnalysis();
-      setTitle("");
-      setDescription("");
+      
+      if (isWaitingUser) {
+        // Just mock continuing the analysis
+        useProblemStore.setState({ analysisState: "ANALYZING", isAnalyzing: true });
+        setTitle("");
+        setDescription("");
+      } else {
+        submitProblem(title.trim(), description.trim());
+        startAnalysis();
+        setTitle("");
+        setDescription("");
+      }
     },
-    [canSubmit, title, description, submitProblem, startAnalysis]
+    [canSubmit, title, description, submitProblem, startAnalysis, isWaitingUser]
   );
 
   const handleKeyDown = useCallback(
@@ -53,14 +65,16 @@ export function ProblemInput({ className }: ProblemInputProps) {
         <div
           className={cn(
             "relative rounded-xl border bg-card/40 backdrop-blur-sm transition-all duration-300",
-            isAnalyzing
+            isAnalyzing && !isWaitingUser
               ? "border-violet-500/30 ring-1 ring-violet-500/10"
-              : "border-border/50 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/10",
-            isComplete && "border-emerald-500/30 ring-1 ring-emerald-500/10"
+              : isWaitingUser 
+                ? "border-amber-500/30 ring-1 ring-amber-500/10" 
+                : "border-border/50 focus-within:border-primary/30 focus-within:ring-1 focus-within:ring-primary/10",
+            isComplete && !isWaitingUser && "border-emerald-500/30 ring-1 ring-emerald-500/10"
           )}
         >
           {/* Progress bar — runs along the top edge */}
-          {isAnalyzing && (
+          {isAnalyzing && !isWaitingUser && (
             <div className="absolute top-0 left-0 right-0 h-[2px] overflow-hidden rounded-t-xl">
               <div
                 className="h-full bg-gradient-to-r from-violet-500 via-indigo-500 to-violet-500 transition-all duration-700 ease-out"
@@ -72,8 +86,15 @@ export function ProblemInput({ className }: ProblemInputProps) {
           )}
 
           {/* Complete indicator */}
-          {isComplete && !isAnalyzing && (
+          {isComplete && !isWaitingUser && (
             <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-xl bg-gradient-to-r from-emerald-500 to-emerald-400" />
+          )}
+
+          {/* Waiting User indicator */}
+          {isWaitingUser && (
+            <div className="absolute top-0 left-0 right-0 h-[2px] overflow-hidden rounded-t-xl bg-amber-500/20">
+               <div className="h-full bg-amber-500 w-1/3 animate-shimmer" />
+            </div>
           )}
 
           <div className="p-4">
@@ -83,30 +104,36 @@ export function ProblemInput({ className }: ProblemInputProps) {
                 <div
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-lg transition-colors duration-300",
-                    isAnalyzing
+                    isAnalyzing && !isWaitingUser
                       ? "bg-gradient-to-br from-violet-500/30 to-indigo-500/30"
-                      : isComplete
-                        ? "bg-gradient-to-br from-emerald-500/20 to-emerald-500/10"
-                        : "bg-gradient-to-br from-violet-500/20 to-indigo-500/20"
+                      : isWaitingUser
+                        ? "bg-gradient-to-br from-amber-500/30 to-amber-600/30"
+                        : isComplete
+                          ? "bg-gradient-to-br from-emerald-500/20 to-emerald-500/10"
+                          : "bg-gradient-to-br from-violet-500/20 to-indigo-500/20"
                   )}
                 >
-                  {isAnalyzing ? (
+                  {isAnalyzing && !isWaitingUser ? (
                     <Brain className="h-3.5 w-3.5 text-violet-400 animate-pulse" />
+                  ) : isWaitingUser ? (
+                    <Brain className="h-3.5 w-3.5 text-amber-400" />
                   ) : (
                     <Sparkles className="h-3.5 w-3.5 text-violet-400" />
                   )}
                 </div>
                 <span className="text-sm font-semibold text-foreground/80">
-                  {isAnalyzing
+                  {isAnalyzing && !isWaitingUser
                     ? "YZ Analiz Ediyor..."
-                    : isComplete
-                      ? "Analiz Tamamlandı"
-                      : "Probleminizi Açıklayın"}
+                    : isWaitingUser
+                      ? "Cevabınız Bekleniyor"
+                      : isComplete
+                        ? "Analiz Tamamlandı"
+                        : "Probleminizi Açıklayın"}
                 </span>
               </div>
 
               {/* Progress percentage during analysis */}
-              {isAnalyzing && (
+              {isAnalyzing && !isWaitingUser && (
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 w-20 overflow-hidden rounded-full bg-muted/50">
                     <div
@@ -121,7 +148,7 @@ export function ProblemInput({ className }: ProblemInputProps) {
               )}
 
               {/* Reset button when complete */}
-              {isComplete && !isAnalyzing && (
+              {isComplete && !isAnalyzing && !isWaitingUser && (
                 <Button
                   type="button"
                   variant="ghost"
@@ -136,38 +163,48 @@ export function ProblemInput({ className }: ProblemInputProps) {
             </div>
 
             {/* Inputs */}
+            {!isWaitingUser && (
             <Input
               placeholder="Problem başlığı (örn. Taşıyıcı Bant Motorunun Aşırı Isınması)"
               value={isAnalyzing || isComplete ? currentProblem?.title || "" : title}
               onChange={(e) => setTitle(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={isAnalyzing || isComplete}
+              disabled={disabled}
               className={cn(
                 "mb-2 border-none bg-transparent px-0 text-sm font-medium placeholder:text-muted-foreground/50 focus-visible:ring-0 shadow-none",
-                (isAnalyzing || isComplete) && "opacity-60 cursor-not-allowed"
+                disabled && "opacity-60 cursor-not-allowed"
               )}
             />
+            )}
 
             <textarea
-              placeholder="Ne zaman başladığı, etkilenen sistemler ve gözlemler dahil olmak üzere problem hakkında ayrıntılı bağlam sağlayın..."
-              value={isAnalyzing || isComplete ? currentProblem?.description || "" : description}
-              onChange={(e) => setDescription(e.target.value)}
+              placeholder={isWaitingUser && nextQuestion ? nextQuestion : "Ne zaman başladığı, etkilenen sistemler ve gözlemler dahil olmak üzere problem hakkında ayrıntılı bağlam sağlayın..."}
+              value={disabled && !isWaitingUser ? currentProblem?.description || "" : description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                if (isWaitingUser) setTitle("Yanıt");
+              }}
               onKeyDown={handleKeyDown}
               rows={3}
-              disabled={isAnalyzing || isComplete}
+              disabled={disabled}
               className={cn(
                 "w-full resize-none bg-transparent text-sm text-muted-foreground placeholder:text-muted-foreground/40 focus:outline-none leading-relaxed",
-                (isAnalyzing || isComplete) && "opacity-60 cursor-not-allowed"
+                disabled && "opacity-60 cursor-not-allowed"
               )}
             />
 
             {/* Footer */}
             <div className="flex items-center justify-between pt-2 border-t border-border/30">
               <div className="flex items-center gap-2 text-[11px] text-muted-foreground/50">
-                {isAnalyzing ? (
+                {isAnalyzing && !isWaitingUser ? (
                   <span className="flex items-center gap-1.5 text-violet-400/70">
                     <div className="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse" />
                     YZ motoru probleminizi işliyor...
+                  </span>
+                ) : isWaitingUser ? (
+                  <span className="flex items-center gap-1.5 text-amber-400/70">
+                    <div className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+                    Soruya yanıt verin
                   </span>
                 ) : isComplete ? (
                   <span className="flex items-center gap-1.5 text-emerald-400/70">
@@ -193,17 +230,24 @@ export function ProblemInput({ className }: ProblemInputProps) {
                 disabled={!canSubmit}
                 className={cn(
                   "gap-1.5 transition-all",
-                  isAnalyzing
+                  isAnalyzing && !isWaitingUser
                     ? "bg-violet-600/50 text-white/70 cursor-not-allowed"
-                    : isComplete
-                      ? "bg-emerald-600/50 text-white/70 cursor-not-allowed"
-                      : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
+                    : isWaitingUser
+                      ? "bg-amber-600 hover:bg-amber-700 text-white"
+                      : isComplete
+                        ? "bg-emerald-600/50 text-white/70 cursor-not-allowed"
+                        : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
                 )}
               >
-                {isAnalyzing ? (
+                {isAnalyzing && !isWaitingUser ? (
                   <>
                     <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                     Analiz Ediliyor...
+                  </>
+                ) : isWaitingUser ? (
+                  <>
+                    <Send className="h-3.5 w-3.5" />
+                    Yanıtla
                   </>
                 ) : isComplete ? (
                   <>

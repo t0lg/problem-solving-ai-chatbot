@@ -47,13 +47,34 @@ export interface TimelineEvent {
   metadata?: Record<string, unknown>;
 }
 
+export interface AIAction {
+  id: string;
+  type:
+    | "assign_task"
+    | "draft_email"
+    | "check_inventory"
+    | "escalate_incident"
+    | "schedule_maintenance";
+  label: string;
+  description: string;
+}
+
 export interface AnalysisResult {
   id: string;
   problemId: string;
-  rootCause: string;
+  methodology: string;
+  currentStep: number;
+  analysisState: "IDLE" | "ANALYZING" | "WAITING_USER" | "COMPLETED";
+  rootCause?: string;
   confidence: number;
+  confidenceScore?: number;
   findings: Finding[];
   recommendations: string[];
+  correctiveActions: string[];
+  optionalActions: AIAction[];
+  lessonsLearned: string[];
+  investigationSteps: InvestigationStep[];
+  nextQuestion?: string;
   timeline: TimelineEvent[];
   createdAt: string;
 }

@@ -8,6 +8,7 @@ import { LessonsLearnedCard } from "@/components/lessons/lessons-learned-card";
 import { MethodologyCard } from "@/components/methodology/methodology-card";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
+import { OptionalActionsPanel } from "@/components/actions/optional-actions-panel";
 import { useProblemStore } from "@/store/useProblemStore";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -146,11 +147,11 @@ export function InsightsPanel() {
                     <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted/50">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-700"
-                        style={{ width: `${analysisResult.confidence * 100}%` }}
+                        style={{ width: `${(analysisResult.confidenceScore || analysisResult.confidence) * 100}%` }}
                       />
                     </div>
                     <span className="text-[9px] font-mono text-emerald-400 tabular-nums">
-                      {Math.round(analysisResult.confidence * 100)}%
+                      {Math.round((analysisResult.confidenceScore || analysisResult.confidence) * 100)}%
                     </span>
                   </div>
                 </div>
@@ -158,13 +159,13 @@ export function InsightsPanel() {
             )}
 
             {/* Actions — appear after step 5 (part of analysisResult) */}
-            {showRootCause && analysisResult && analysisResult.recommendations.length > 0 && (
-              <div className="animate-fadeIn">
+            {showRootCause && analysisResult && analysisResult.correctiveActions && analysisResult.correctiveActions.length > 0 && (
+              <div className="animate-fadeIn mt-4">
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 px-1 mb-2">
                   Düzeltici Aksiyonlar
                 </p>
                 <div className="rounded-lg border border-border/30 bg-card/30 p-3 space-y-2">
-                  {analysisResult.recommendations.slice(0, 4).map((rec, i) => (
+                  {analysisResult.correctiveActions.slice(0, 4).map((rec, i) => (
                     <div
                       key={i}
                       className="flex items-start gap-2 text-xs text-muted-foreground"
@@ -175,6 +176,11 @@ export function InsightsPanel() {
                   ))}
                 </div>
               </div>
+            )}
+
+            {/* Optional Actions */}
+            {showRootCause && analysisResult && (
+              <OptionalActionsPanel />
             )}
 
             {/* Selected Methodology — appears after step 3 */}

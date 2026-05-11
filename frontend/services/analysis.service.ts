@@ -34,41 +34,41 @@ function pickRandom<T>(arr: T[]): T {
 // ── AI Response Generators ──────────────────────────────────────────────
 
 const symptomTemplates = [
-  "Abnormal operating parameters detected in the described system component.",
-  "Historical data shows gradual degradation pattern over the past operational cycle.",
-  "Environmental and operational conditions are contributing to accelerated failure mode.",
-  "Sensor data correlation reveals a progressive decline in system performance metrics.",
-  "Pattern analysis indicates a systemic issue rather than isolated component failure.",
+  "Tanımlanan sistem bileşeninde anormal çalışma parametreleri tespit edildi.",
+  "Geçmiş veriler, son çalışma döngüsü boyunca kademeli bir bozulma paterni gösteriyor.",
+  "Çevresel ve operasyonel koşullar, hızlandırılmış arıza moduna katkıda bulunuyor.",
+  "Sensör verisi korelasyonu, sistem performans metriklerinde aşamalı bir düşüş ortaya koyuyor.",
+  "Patern analizi, izole bir bileşen arızası yerine sistemsel bir soruna işaret ediyor.",
 ];
 
 const failureChainTemplates = [
   (problem: string) =>
-    `Initial trigger: ${problem} → Cascading effect on adjacent subsystems → Progressive performance degradation → Critical threshold breach.`,
+    `İlk tetikleyici: ${problem} → Bitişik alt sistemler üzerinde kademeli etki → Aşamalı performans düşüşü → Kritik eşik ihlali.`,
   (problem: string) =>
-    `Root event: ${problem} → Undetected wear accumulation → Safety margin erosion → Operational parameter exceedance → System alert trigger.`,
+    `Kök olay: ${problem} → Tespit edilemeyen aşınma birikimi → Güvenlik marjı aşınması → Operasyonel parametre aşımı → Sistem uyarısı tetiklemesi.`,
   (problem: string) =>
-    `Origin: ${problem} → Maintenance gap exploitation → Accelerated component stress → Thermal/mechanical limit exceeded → Failure manifestation.`,
+    `Başlangıç: ${problem} → Bakım boşluğunun oluşması → Hızlandırılmış bileşen stresi → Termal/mekanik limit aşımı → Arızanın ortaya çıkması.`,
 ];
 
 const rootCauseTemplates = [
-  "Insufficient preventive maintenance schedule combined with increased operational load created conditions for accelerated component degradation.",
-  "Process parameter drift due to calibration gap allowed the system to operate outside optimal range, leading to cumulative stress damage.",
-  "Maintenance interval extension during cost optimization initiative reduced the safety margin below the threshold for reliable operation.",
-  "Environmental condition changes were not reflected in the operating procedures, causing the system to experience unaccounted thermal stress.",
-  "Component material specification was inadequate for the current operating conditions, resulting in premature wear and failure.",
+  "Yetersiz önleyici bakım programı ile artan operasyonel yükün birleşmesi, hızlandırılmış bileşen bozulması için uygun koşullar yarattı.",
+  "Kalibrasyon eksikliği nedeniyle proses parametrelerindeki kayma, sistemin optimum aralık dışında çalışmasına izin vererek kümülatif stres hasarına yol açtı.",
+  "Maliyet optimizasyonu girişimi sırasında bakım aralıklarının uzatılması, güvenlik marjını güvenilir çalışma eşiğinin altına düşürdü.",
+  "Çevresel koşul değişikliklerinin işletim prosedürlerine yansıtılmaması, sistemin hesaba katılmayan termal strese maruz kalmasına neden oldu.",
+  "Bileşen malzeme spesifikasyonu mevcut çalışma koşulları için yetersiz kaldı ve erken aşınma ile arızaya neden oldu.",
 ];
 
 const actionTemplates = [
-  "Implement immediate containment actions to prevent further damage",
-  "Restore original maintenance schedule for affected components",
-  "Install continuous monitoring with automated threshold alerts",
-  "Conduct root cause verification through physical inspection",
-  "Update operating procedures to reflect corrective measures",
-  "Schedule component replacement during next planned shutdown",
-  "Perform reliability analysis on similar equipment across the facility",
-  "Establish a cross-functional review team for preventive action tracking",
-  "Add failure mode to FMEA documentation for future reference",
-  "Implement predictive analytics for early detection of similar patterns",
+  "Daha fazla hasarı önlemek için derhal kontrol altına alma eylemlerini uygulayın",
+  "Etkilenen bileşenler için orijinal bakım programını geri yükleyin",
+  "Otomatik eşik uyarıları ile sürekli izleme sistemi kurun",
+  "Fiziksel inceleme yoluyla kök neden doğrulaması yapın",
+  "Düzeltici önlemleri yansıtacak şekilde işletim prosedürlerini güncelleyin",
+  "Bir sonraki planlı duruş sırasında bileşen değişimini planlayın",
+  "Tesisteki benzer ekipmanlarda güvenilirlik analizi gerçekleştirin",
+  "Önleyici eylem takibi için işlevler arası bir inceleme ekibi oluşturun",
+  "Gelecekte referans olması için arıza modunu FMEA belgelerine ekleyin",
+  "Benzer paternlerin erken tespiti için öngörücü analitik uygulayın",
 ];
 
 // ── Step Generators ─────────────────────────────────────────────────────
@@ -81,60 +81,60 @@ function generateStepDefinitions(problem: Problem): Omit<InvestigationStep, "sta
       id: "step-1",
       stepNumber: 1,
       type: "problem_received",
-      title: "Problem Received",
-      description: `Registered: "${problem.title}" — initializing investigation context and loading knowledge base.`,
+      title: "Problem Alındı",
+      description: `Kaydedildi: "${problem.title}" — inceleme bağlamı başlatılıyor ve bilgi tabanı yükleniyor.`,
       detail: problem.description,
     },
     {
       id: "step-2",
       stepNumber: 2,
       type: "ai_thinking",
-      title: "AI Analysis Engine Processing",
-      description: "Analyzing problem context, cross-referencing historical data, and evaluating failure patterns across the knowledge base.",
+      title: "Yapay Zeka Analiz Motoru İşliyor",
+      description: "Problem bağlamı analiz ediliyor, geçmiş verilerle karşılaştırılıyor ve bilgi tabanındaki arıza paternleri değerlendiriliyor.",
       detail: pickRandom(symptomTemplates),
     },
     {
       id: "step-3",
       stepNumber: 3,
       type: "methodology_selection",
-      title: "Methodology Selected",
-      description: "Based on problem complexity and category, an optimal analysis framework has been selected.",
+      title: "Metodoloji Seçildi",
+      description: "Problemin karmaşıklığına ve kategorisine göre optimal bir analiz çerçevesi seçildi.",
     },
     {
       id: "step-4",
       stepNumber: 4,
       type: "root_cause_analysis",
-      title: "Root Cause Identified",
-      description: "Structured reasoning complete. Failure chain and root cause determined with supporting evidence.",
+      title: "Kök Neden Tespit Edildi",
+      description: "Yapılandırılmış akıl yürütme tamamlandı. Arıza zinciri ve kök neden destekleyici kanıtlarla birlikte belirlendi.",
       detail: failureChainFn(problem.title),
     },
     {
       id: "step-5",
       stepNumber: 5,
       type: "action_proposal",
-      title: "Corrective Actions Proposed",
-      description: "Generated prioritized corrective and preventive action plan based on root cause analysis.",
+      title: "Düzeltici Aksiyonlar Önerildi",
+      description: "Kök neden analizine dayanarak önceliklendirilmiş düzeltici ve önleyici eylem planı oluşturuldu.",
     },
     {
       id: "step-6",
       stepNumber: 6,
       type: "similar_incidents",
-      title: "Similar Incidents Found",
-      description: "Cross-referenced problem signature against historical incident database for pattern matching.",
+      title: "Benzer Olaylar Bulundu",
+      description: "Problem imzası, patern eşleştirme için geçmiş olay veritabanı ile çapraz referanslandı.",
     },
     {
       id: "step-7",
       stepNumber: 7,
       type: "lessons_learned",
-      title: "Lessons Learned Extracted",
-      description: "Synthesized actionable insights from past resolutions of similar problems.",
+      title: "Alınan Dersler Çıkarıldı",
+      description: "Geçmişteki benzer problemlerin çözümlerinden eyleme geçirilebilir içgörüler sentezlendi.",
     },
     {
       id: "step-8",
       stepNumber: 8,
       type: "completion",
-      title: "Investigation Complete",
-      description: "All analysis steps completed successfully. Results are ready for review.",
+      title: "İnceleme Tamamlandı",
+      description: "Tüm analiz adımları başarıyla tamamlandı. Sonuçlar incelemeye hazır.",
     },
   ];
 }
@@ -176,24 +176,24 @@ function generateAnalysisResult(problem: Problem, methodology: Methodology): Ana
   const findings: Finding[] = [
     {
       id: "f1",
-      title: "Primary Failure Mode Identified",
-      description: `Analysis of "${problem.title}" reveals a systematic pattern consistent with degraded maintenance effectiveness.`,
+      title: "Birincil Arıza Modu Tanımlandı",
+      description: `"${problem.title}" analizi, düşmüş bakım etkinliği ile tutarlı sistematik bir patern ortaya koyuyor.`,
       severity: problem.severity === "critical" ? "critical" : "high",
       evidence: [
-        "Historical maintenance records (last 6 months)",
-        "SCADA system telemetry data",
-        `Incident correlation: ${randomBetween(2, 5)} similar events in database`,
+        "Geçmiş bakım kayıtları (son 6 ay)",
+        "SCADA sistemi telemetri verileri",
+        `Olay korelasyonu: Veritabanında ${randomBetween(2, 5)} benzer olay`,
       ],
     },
     {
       id: "f2",
-      title: "Contributing Factor Analysis",
-      description: "Secondary factors including operational load changes and environmental conditions have compounded the primary failure mode.",
+      title: "Katkıda Bulunan Faktör Analizi",
+      description: "Operasyonel yük değişiklikleri ve çevresel koşullar gibi ikincil faktörler, birincil arıza modunu daha da karmaşıklaştırdı.",
       severity: "medium",
       evidence: [
-        "Operational log analysis",
-        "Environmental monitoring data",
-        "Shift report cross-reference",
+        "Operasyonel günlük analizi",
+        "Çevresel izleme verileri",
+        "Vardiya raporu çapraz referansı",
       ],
     },
   ];
@@ -201,10 +201,38 @@ function generateAnalysisResult(problem: Problem, methodology: Methodology): Ana
   return {
     id: `analysis-${Date.now()}`,
     problemId: problem.id,
+    methodology: methodology.type,
+    currentStep: methodology.steps.length,
+    analysisState: "COMPLETED",
     rootCause,
     confidence,
+    confidenceScore: confidence,
     findings,
     recommendations,
+    correctiveActions: recommendations,
+    optionalActions: [
+      {
+        id: "act-1",
+        type: "schedule_maintenance",
+        label: "Bakım Planla",
+        description: "Tespit edilen sorun için acil bakım talebi oluşturun",
+      },
+      {
+        id: "act-2",
+        type: "assign_task",
+        label: "Görev Ata",
+        description: "İlgili ekibe onarım için görev yönlendirin",
+      },
+      {
+        id: "act-3",
+        type: "draft_email",
+        label: "Durum Raporu Hazırla",
+        description: "Yöneticiye detaylı bilgilendirme e-postası taslağı oluşturun",
+      }
+    ],
+    lessonsLearned: [],
+    investigationSteps: [],
+    nextQuestion: "Önerilen düzeltici aksiyonları uygulamaya başlamak ister misiniz?",
     timeline: [], // Timeline is managed separately via steps
     createdAt: new Date().toISOString(),
   };
@@ -290,7 +318,7 @@ export function runInvestigationPipeline(
       switch (step.type) {
         case "methodology_selection": {
           const selected = selectMethodology(problem);
-          step.description = `Selected "${selected.methodology.name}" based on problem category and complexity analysis.`;
+          step.description = `Problem kategorisi ve karmaşıklık analizine dayanarak "${selected.methodology.name}" seçildi.`;
           step.detail = selected.methodology.description;
           callbacks.onMethodologySelected(selected);
           break;
@@ -304,20 +332,20 @@ export function runInvestigationPipeline(
 
         case "action_proposal": {
           // Actions are already part of the analysis result
-          step.detail = "Corrective actions have been integrated into the analysis report.";
+          step.detail = "Düzeltici aksiyonlar analiz raporuna entegre edildi.";
           break;
         }
 
         case "similar_incidents": {
           const incidents = generateSimilarIncidents();
-          step.description = `Found ${incidents.length} similar incidents with similarity scores ranging from ${Math.round(Math.min(...incidents.map((i) => i.similarityScore)) * 100)}% to ${Math.round(Math.max(...incidents.map((i) => i.similarityScore)) * 100)}%.`;
+          step.description = `%${Math.round(Math.min(...incidents.map((i) => i.similarityScore)) * 100)} ile %${Math.round(Math.max(...incidents.map((i) => i.similarityScore)) * 100)} arasında değişen benzerlik skorlarına sahip ${incidents.length} benzer olay bulundu.`;
           callbacks.onSimilarIncidents(incidents);
           break;
         }
 
         case "lessons_learned": {
           const lessons = generateLessonsLearned();
-          step.description = `Extracted ${lessons.length} actionable lessons from historical incident resolutions.`;
+          step.description = `Geçmiş olay çözümlerinden ${lessons.length} adet eyleme geçirilebilir ders çıkarıldı.`;
           callbacks.onLessonsLearned(lessons);
           break;
         }

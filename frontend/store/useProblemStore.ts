@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-import type { Problem, AnalysisResult, InvestigationStep } from "@/types/problem";
+import type { Problem, AnalysisResult, InvestigationStep, AIAction } from "@/types/problem";
 import type { Methodology, SelectedMethodology } from "@/types/methodology";
 import type { SimilarIncident, LessonLearned } from "@/types/incident";
 import { mockProblems, mockMethodologies } from "@/lib/mock-data";
@@ -20,6 +20,12 @@ interface ProblemState {
 
   // Investigation pipeline
   timelineSteps: InvestigationStep[];
+  investigationSteps: InvestigationStep[];
+  analysisState: "IDLE" | "ANALYZING" | "WAITING_USER" | "COMPLETED";
+  currentStep: number;
+  optionalActions: AIAction[];
+  nextQuestion?: string;
+  confidenceScore?: number;
   analysisProgress: number;
   isAnalyzing: boolean;
   isComplete: boolean;
@@ -38,6 +44,10 @@ interface ProblemState {
   clearMethodology: () => void;
   startAnalysis: () => void;
   updateStep: (step: InvestigationStep) => void;
+  advanceInvestigationStep: () => void;
+  appendTimelineStep: (step: InvestigationStep) => void;
+  setOptionalActions: (actions: AIAction[]) => void;
+  setAnalysisState: (state: "IDLE" | "ANALYZING" | "WAITING_USER" | "COMPLETED") => void;
   updateProgress: (progress: number) => void;
   setMethodology: (selected: SelectedMethodology) => void;
   setAnalysisResult: (result: AnalysisResult) => void;
@@ -62,6 +72,12 @@ export const useProblemStore = create<ProblemState>()(
       similarIncidents: [],
       lessonsLearned: [],
       timelineSteps: [],
+      investigationSteps: [],
+      analysisState: "IDLE",
+      currentStep: 0,
+      optionalActions: [],
+      nextQuestion: undefined,
+      confidenceScore: undefined,
       analysisProgress: 0,
       isAnalyzing: false,
       isComplete: false,
@@ -149,8 +165,14 @@ export const useProblemStore = create<ProblemState>()(
           {
             isAnalyzing: true,
             isComplete: false,
+            analysisState: "ANALYZING",
             analysisProgress: 0,
             timelineSteps: [],
+            investigationSteps: [],
+            currentStep: 0,
+            optionalActions: [],
+            nextQuestion: undefined,
+            confidenceScore: undefined,
             analysisResult: null,
             selectedMethodology: null,
             similarIncidents: [],
@@ -200,6 +222,22 @@ export const useProblemStore = create<ProblemState>()(
           `updateStep:${step.type}:${step.status}`
         ),
 
+      advanceInvestigationStep: () =>
+        set((state) => ({ currentStep: state.currentStep + 1 }), false, "advanceInvestigationStep"),
+
+      appendTimelineStep: (step) =>
+        set(
+          (state) => ({ investigationSteps: [...state.investigationSteps, step], timelineSteps: [...state.timelineSteps, step] }),
+          false,
+          "appendTimelineStep"
+        ),
+
+      setOptionalActions: (actions) =>
+        set({ optionalActions: actions }, false, "setOptionalActions"),
+
+      setAnalysisState: (analysisState) =>
+        set({ analysisState }, false, "setAnalysisState"),
+
       updateProgress: (progress) =>
         set({ analysisProgress: progress }, false, "updateProgress"),
 
@@ -207,7 +245,15 @@ export const useProblemStore = create<ProblemState>()(
         set({ selectedMethodology: selected }, false, "setMethodology"),
 
       setAnalysisResult: (result) =>
-        set({ analysisResult: result }, false, "setAnalysisResult"),
+        set({ 
+          analysisResult: result,
+          analysisState: result.analysisState,
+          currentStep: result.currentStep,
+          optionalActions: result.optionalActions,
+          investigationSteps: result.investigationSteps || [],
+          nextQuestion: result.nextQuestion,
+          confidenceScore: result.confidenceScore
+        }, false, "setAnalysisResult"),
 
       setSimilarIncidents: (incidents) =>
         set({ similarIncidents: incidents }, false, "setSimilarIncidents"),
@@ -220,6 +266,7 @@ export const useProblemStore = create<ProblemState>()(
           (state) => ({
             isAnalyzing: false,
             isComplete: true,
+            analysisState: "COMPLETED",
             analysisProgress: 100,
             _abortPipeline: null,
             currentProblem: state.currentProblem
@@ -242,6 +289,12 @@ export const useProblemStore = create<ProblemState>()(
             similarIncidents: [],
             lessonsLearned: [],
             timelineSteps: [],
+            investigationSteps: [],
+            analysisState: "IDLE",
+            currentStep: 0,
+            optionalActions: [],
+            nextQuestion: undefined,
+            confidenceScore: undefined,
             analysisProgress: 0,
             isAnalyzing: false,
             isComplete: false,
