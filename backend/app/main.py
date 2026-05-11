@@ -7,8 +7,8 @@ from app.api.rag import router as rag_router
 
 app = FastAPI(
     title="AI Problem Solving Chatbot API",
-    description="AI destekli sistematik problem çözme asistanı.",
-    version="0.1.0"
+    description="Yapay zeka destekli problem çözme sohbet botu için mock API.",
+    version="0.1.0",
 )
 
 app.add_middleware(
@@ -26,6 +26,4 @@ app.include_router(rag_router, prefix="/api/rag", tags=["RAG"])
 
 @app.get("/")
 def root():
-    return {
-        "message": "AI Problem Solving Chatbot API çalışıyor."
-    }
+    return {"message": "AI Problem Solving Chatbot API çalışıyor."}
